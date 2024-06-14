@@ -1,13 +1,36 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
-  <title>Cookie Test</title>
 </head>
 <body>
-<h1>This is for test only </h1>
-  <script>
+  <h1>jun 14 1301</h1>
+    <script>
+        const checkCookiesEnable = () => {
+            let isCookieEnabled = (window.navigator.cookieEnabled) ? true : false;
+            if (typeof window.navigator.cookieEnabled == "undefined" && !isCookieEnabled) {
+                document.cookie = "testcookie";
+                isCookieEnabled = (document.cookie.indexOf("testcookie") != -1) ? true : false;
+            }
 
-    document.cookie = "test=cookie; SameSite=None; Secure";
-  </script>
+            return isCookieEnabled;
+        }
+        (function () {
+            window.addEventListener('message', event => {
+                try {
+                    let data = JSON.parse(event.data)
+                    if (data['test'] !== 'cookie')
+                        return
+                    let result = checkCookiesEnable()
+                    parent.postMessage(JSON.stringify({
+                        'result': result
+                    }), event.origin)
+                }
+                catch (e) {
+                    console.error(e)
+                }
+            });
+        })();
+    </script>
 </body>
+
 </html>
